@@ -1,8 +1,11 @@
 import random
+from util import Queue
+
 
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -11,9 +14,6 @@ class SocialGraph:
         self.friendships = {}
 
     def add_friendship(self, user_id, friend_id):
-        """
-        Creates a bi-directional friendship
-        """
         if user_id == friend_id:
             print("WARNING: You cannot be friends with yourself")
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
@@ -23,61 +23,49 @@ class SocialGraph:
             self.friendships[friend_id].add(user_id)
 
     def add_user(self, name):
-        """
-        Create a new user with a sequential integer ID
-        """
         self.last_id += 1  # automatically increment the ID to assign the new user
         self.users[self.last_id] = User(name)
         self.friendships[self.last_id] = set()
 
     def populate_graph(self, num_users, avg_friendships):
-        """
-        Takes a number of users and an average number of friendships
-        as arguments
-
-        Creates that number of users and a randomly distributed friendships
-        between those users.
-
-        The number of users must be greater than the average number of friendships.
-        """
-        # Reset graph
         self.last_id = 0
         self.users = {}
         self.friendships = {}
 
         for i in range(num_users):
             self.add_user(User(i))
+
         friendship_array = []
 
         for user in self.users:
-            print(user)
             for user2 in self.users:
                 if user < user2:
-                    friendship_array.append((user,user2))
-        
+                    friendship_array.append((user, user2))
+
         number_of_made_friends = 0
-        while number_of_made_friends > (num_users * 3):
+        while number_of_made_friends < (num_users * 2):
             random.shuffle(friendship_array)
-            friendship = friendship_array[0]
-            print(friendship)
-            friendship_array.remove(0)
+            friendship = friendship_array[-1]
+            friendship_array.pop()
             number_of_made_friends += 1
-            self.add_friendship(friendship[0], friendship[1])  
-        # Create friendships
-        print(self.friendships)
-    
+            self.add_friendship(friendship[0], friendship[1])
 
     def get_all_social_paths(self, user_id):
-        """
-        Takes a user's user_id as an argument
+        visited = {}
+        my_queue = Queue()
+        my_queue.enqueue([user_id])
 
-        Returns a dictionary containing every user in that user's
-        extended network with the shortest friendship path between them.
+        while my_queue.size() > 0:
 
-        The key is the friend's ID and the value is the path.
-        """
-        visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+            node = my_queue.dequeue()
+            new_path = node[-1]
+
+            if new_path not in visited:
+                visited[new_path] = node
+                for friend in self.friendships[new_path]:
+                    path = node + [friend]
+                    my_queue.enqueue(path)
+
         return visited
 
 
