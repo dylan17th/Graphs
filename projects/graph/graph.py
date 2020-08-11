@@ -101,13 +101,10 @@ class Graph:
                         next_in_queue = node 
                         path = next_in_queue + [next_node]
                         my_stack.push(path)
-                        
+
         return None
 
-    def dfs_recursive(self, starting_vertex, destination_vertex, visited = {}, path= []):
-        if starting_vertex == destination_vertex and starting_vertex not in visited:
-            visited[starting_vertex] = path + [starting_vertex]
-    
+    def dfs_recursive(self, starting_vertex, destination_vertex, visited = {}, path= []):    
         if starting_vertex not in visited:
             visited[starting_vertex] = path + [starting_vertex] 
             for next_node in self.get_neighbors(starting_vertex):
