@@ -1,7 +1,6 @@
 from util import Stack, Queue  # These may come in handy
 
 class Graph:
-
     def __init__(self):
         self.vertices = {}
 
@@ -49,31 +48,33 @@ class Graph:
                 for node in self.get_neighbors(visited_node):
                     my_stack.push(node)
 
-    def dft_recursive(self, starting_vertex, visited={}):
-        if starting_vertex not in visited:
-            print(starting_vertex)
-            visited[starting_vertex] = starting_vertex
-            for index in self.get_neighbors(starting_vertex):
-                self.dft_recursive(index)
+    def dft_recursive(self, starting_vertex, visited=None ):
+        if visited is None:
+            visited = set() 
+        print(starting_vertex)
+        visited.add(starting_vertex)
+        for index in self.get_neighbors(starting_vertex):
+            if index not in visited:
+                self.dft_recursive(index, visited)
 
     def bfs(self, starting_vertex, destination_vertex):
 
         my_queue = Queue()
         my_queue.enqueue([starting_vertex])
         
-        visited = {}
+        visited = set()
 
         while my_queue.size() > 0:
 
             node = my_queue.dequeue()
+            new_path = node[-1]
+            if new_path not in visited:
 
-            if node[-1] not in visited:
-
-                if node[-1] is destination_vertex:
+                if new_path is destination_vertex:
                     return node
                 else: 
-                    visited[node[-1]] = node
-                    for next_node in self.get_neighbors(node[-1]):
+                    visited.add(new_path)
+                    for next_node in self.get_neighbors(new_path):
                         next_in_queue = node 
                         path = next_in_queue + [next_node]
                         my_queue.enqueue(path)
@@ -85,19 +86,19 @@ class Graph:
         my_stack = Stack()
         my_stack.push([starting_vertex])
         
-        visited = {}
+        visited = set()
 
         while my_stack.size() > 0:
 
             node = my_stack.pop()
+            new_path = node[-1]
+            if new_path not in visited:
 
-            if node[-1] not in visited:
-
-                if node[-1] is destination_vertex:
+                if new_path is destination_vertex:
                     return node
                 else: 
-                    visited[node[-1]] = node
-                    for next_node in self.get_neighbors(node[-1]):
+                    visited.add(new_path)
+                    for next_node in self.get_neighbors(new_path):
                         next_in_queue = node 
                         path = next_in_queue + [next_node]
                         my_stack.push(path)
@@ -182,5 +183,5 @@ if __name__ == '__main__':
     #     [1, 2, 4, 6]
     #     [1, 2, 4, 7, 6]
     # '''
-    # print(graph.dfs(1, 6))
+    print(graph.dfs(1, 6))
     # print(graph.dfs_recursive(1, 6), "this is the result of the dfs method")
