@@ -51,7 +51,7 @@ def best_route(room, direction, path, my_queue, visited):
     for exit in room.get_exits():
         if exit is direction:
             #checking to see if current room is already in my visited, so I dont revisit a room
-            if room.get_room_in_direction(exit) not in visited and room.get_room_in_direction(exit).id not in player_visited_rooms:     
+            if room.get_room_in_direction(exit).id not in visited and room.get_room_in_direction(exit).id not in player_visited_rooms:     
                 #getting next room I am going to visit
                 next_room = room.get_room_in_direction(exit)
                 #setting the room id to the direction of the current rooms exit point, so I know which room is connected in which direction
@@ -79,19 +79,24 @@ def find_path_for_shortest_unexplored_room_bfs(starting_room):
             if room_number not in visited:
                 visited.add(room_number)
                 #checking the paths in this order because this is the most efficient combination for checking exits
-                best_route(current_room, "s", current_room_path, my_queue, visited)
-                best_route(current_room, "w", current_room_path, my_queue, visited)
-                best_route(current_room, "n", current_room_path, my_queue, visited)
-                best_route(current_room, "e", current_room_path, my_queue, visited) 
-                #back up incase first for senarios fail 
-                for exit in current_room.get_exits():
-                    if current_room.get_room_in_direction(exit) not in visited:
-                        #getting next room I am going to visit
-                        next_room = current_room.get_room_in_direction(exit)
-                        #setting the room id to the direction of the current rooms exit point, so I know which room is connected in which direction
-                        player_visited_rooms[current_room.id][next_room.id] = exit
-                        new_path = current_room_path + [next_room]
-                        my_queue.enqueue(new_path)            
+                if best_route(current_room, "s", current_room_path, my_queue, visited) != None:
+                    best_route(current_room, "s", current_room_path, my_queue, visited)
+                elif best_route(current_room, "w", current_room_path, my_queue, visited) != None:
+                    best_route(current_room, "w", current_room_path, my_queue, visited)
+                elif best_route(current_room, "n", current_room_path, my_queue, visited) != None:
+                    best_route(current_room, "n", current_room_path, my_queue, visited)
+                elif best_route(current_room, "e", current_room_path, my_queue, visited) != None:
+                    best_route(current_room, "e", current_room_path, my_queue, visited)
+                else:
+                    #back up incase first for senarios fail 
+                    for exit in current_room.get_exits():
+                        if current_room.get_room_in_direction(exit).id not in visited:
+                            #getting next room I am going to visit
+                            next_room = current_room.get_room_in_direction(exit)
+                            #setting the room id to the direction of the current rooms exit point, so I know which room is connected in which direction
+                            player_visited_rooms[current_room.id][next_room.id] = exit
+                            new_path = current_room_path + [next_room]
+                            my_queue.enqueue(new_path)            
         else:
             #returning the path to the desired unvisited room, but leaving out the current room
             return current_room_path[1:]
